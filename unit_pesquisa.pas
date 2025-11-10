@@ -1,0 +1,92 @@
+unit unit_pesquisa;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, DB, ADODB, Grids, DBGrids, StdCtrls, Buttons, BitBtn1, DBCtrls;
+
+type
+  Tform_pesquisa = class(TForm)
+    Label1: TLabel;
+    edt_nome: TEdit;
+    btn_pesquisar: TBitBtn1;
+    btn_limpar: TBitBtn1;
+    DataSource1: TDataSource;
+    ADOQuery_pesquisa: TADOQuery;
+    btn_selecionar: TBitBtn1;
+    btn_cancelar: TBitBtn1;
+    DBGrid1: TDBGrid;
+    procedure FormShow(Sender: TObject);
+    procedure btn_pesquisarClick(Sender: TObject);
+    procedure btn_limparClick(Sender: TObject);
+    procedure btn_selecionarClick(Sender: TObject);
+    procedure btn_cancelarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    chave, sql_pesquisa : string;
+  end;
+
+var
+  form_pesquisa: Tform_pesquisa;
+
+implementation
+
+uses unit_menu;
+
+{$R *.dfm}
+
+procedure Tform_pesquisa.FormShow(Sender: TObject);
+begin
+  edt_nome.Clear;
+end;
+
+procedure Tform_pesquisa.btn_pesquisarClick(Sender: TObject);
+begin
+  if edt_nome.Text = '' then
+   showmessage(' Digite o nome ou parte dele ')
+  else if sql_pesquisa = '' then
+   showmessage(' Impossivel pesquisar ')
+  else
+   begin
+    ADOQuery_pesquisa.close;
+    ADOQuery_pesquisa.SQL.Text := sql_pesquisa + ' WHERE NOME LIKE ' +
+      QuotedStr('%' + edt_nome.Text + '%');
+
+
+    ADOQuery_pesquisa.Open;
+
+   end;
+end;
+
+procedure Tform_pesquisa.btn_limparClick(Sender: TObject);
+begin
+  chave :='';
+  edt_nome.Clear;
+  ADOQuery_pesquisa.close;
+
+end;
+
+procedure Tform_pesquisa.btn_selecionarClick(Sender: TObject);
+begin
+  if ADOQuery_pesquisa.Active = false then
+   showmessage(' Impossivel selecionar ')
+  else
+   begin
+    chave := ADOQuery_pesquisa.Fields.Fields[0].AsString;
+    ADOQuery_pesquisa.Close;
+    close;
+   end;
+end;
+
+procedure Tform_pesquisa.btn_cancelarClick(Sender: TObject);
+begin
+  chave :='';
+  ADOQuery_pesquisa.Close;
+  close;
+  
+end;
+
+end.
